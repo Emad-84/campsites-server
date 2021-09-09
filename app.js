@@ -7,7 +7,8 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const session = require("express-session");
 const FileStore = require("session-file-store")(session); //second paramter is fucntion that will be returned in the first paramter function
-
+const passport = require("passport");
+const authanticate = require("./authanticate");
 const mongoose = require("mongoose");
 
 const url = "mongodb://localhost:27017/nucampsite";
@@ -49,24 +50,21 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session()); // if there is a session > req.user
+
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 function auth(req, res, next) {
-  console.log(req.session);
+  console.log(req.user);
 
-  if (!req.session.user) {
+  if (!req.user) {
     const err = new Error("You are not authenticated!");
     err.status = 401;
     return next(err);
   } else {
-    if (req.session.user === "authenticated") {
-      return next();
-    } else {
-      const err = new Error("You are not authenticated!");
-      err.status = 401;
-      return next(err);
-    }
+    return next();
   }
 }
 app.use(auth);
