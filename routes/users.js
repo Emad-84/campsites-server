@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../modals/user");
 const passport = require("passport");
-const { authenticate } = require("passport");
+const authenticate = require("../authanticate");
 // passport-local-mongoose provides methods for registring (signup) and login users.
 
 const router = express.Router();
@@ -33,9 +33,14 @@ router.post("/signup", (req, res) => {
 });
 
 router.post("/login", passport.authenticate("local"), (req, res) => {
+  const token = authenticate.getToken({ _id: req.user._id });
   res.statusCode = 200;
   res.setHeader("Content-type", "application/json");
-  res.json({ success: true, status: "Your are Successfully logged in" });
+  res.json({
+    success: true,
+    token: token,
+    status: "Your are Successfully logged in",
+  });
 });
 
 router.get("/logout", (req, res, next) => {
