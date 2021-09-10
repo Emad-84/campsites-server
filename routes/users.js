@@ -15,17 +15,31 @@ router.post("/signup", (req, res) => {
   User.register(
     new User({ username: req.body.username }),
     req.body.password,
-    (err) => {
+    (err, user) => {
       if (err) {
         err.statusCode = 500; //internal server error
         res.setHeader("Content-type", "application/json");
         res.json({ err: err });
       } else {
         // authenticate return a function as a second argument wich has req,res and (callback F)
-        passport.authenticate("local")(req, res, () => {
-          res.statusCode = 200;
-          res.setHeader("Content-type", "application/json");
-          res.json({ success: true, statue: "Registration Successful!" });
+        if (req.body.firstname) {
+          user.firstname = req.body.firstname;
+        }
+        if (req.body.lastname) {
+          user.lastname = req.body.lastname;
+        }
+        user.save((err) => {
+          if (err) {
+            res.statusCode = 500;
+            res.setHeader("Content-type", "application/json");
+            res.json({ err: err });
+            return;
+          }
+          passport.authenticate("local")(req, res, () => {
+            res.statusCode = 200;
+            res.setHeader("Content-type", "application/json");
+            res.json({ success: true, statue: "Registration Successful!" });
+          });
         });
       }
     }
