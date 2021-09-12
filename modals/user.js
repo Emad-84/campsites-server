@@ -1,6 +1,5 @@
-const { mongo } = require("mongoose");
 const mongoose = require("mongoose");
-const passportLocalMangoose = require("passport-local-mongoose"); // it will handle the username and password internally
+const passportLocalMongoose = require("passport-local-mongoose");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -18,7 +17,6 @@ const userSchema = new Schema({
   },
 });
 
-// plug the local passport to the schema.
-userSchema.plugin(passportLocalMangoose); // plugin provides static methods like authanticate.
+userSchema.plugin(passportLocalMongoose); //plug in the plug-in
 
 module.exports = mongoose.model("User", userSchema);
